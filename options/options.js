@@ -1,0 +1,23 @@
+// Add validation
+const timeOption = document.getElementById('time-option')
+timeOption.addEventListener('change', (event) => {
+  const val = event.target.value
+  if (val < 1 || val > 60) {
+    timeOption.value = 25
+  }
+})
+
+// Save Option
+const saveBtn = document.getElementById('save-btn')
+saveBtn.addEventListener('click', () => {
+  chrome.storage.local.set({
+    timeOption: timeOption.value,
+    timer: 0,
+    isRunning: false,
+  })
+})
+
+// Load Saved Option
+chrome.storage.local.get(['timeOption'], (res) => {
+  timeOption.value = res.timeOption
+})
