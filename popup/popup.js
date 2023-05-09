@@ -22,6 +22,14 @@ function updateTime() {
 updateTime()
 setInterval(updateTime, 1000)
 
+// new setting button
+document.addEventListener("DOMContentLoaded", function() {
+  var button = document.querySelector("#settingsButton");
+  button.addEventListener("click", function() {
+    chrome.runtime.openOptionsPage();
+  });
+});
+
 
 
 const startTimerBtn = document.getElementById("start-timer-btn");
