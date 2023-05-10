@@ -4,28 +4,28 @@ const time = document.getElementById("time");
 
 // Update time every 1sec
 function updateTime() {
-    chrome.storage.local.get(["timer", "timeOption"], (res) => {
-      const time = document.getElementById("time")
-      
-      // get no. of minutes & secs
-      const minutes = `${ res.timeOption - Math.ceil(res.timer / 60)}`.padStart(2, "0");
-      let seconds = "00";
-      if (res.timer % 60 != 0) {
-        seconds = `${60 -res.timer % 60}`.padStart(2, "0");
-      }
-  
-      // show minutes & secs on UI
+  chrome.storage.local.get(["timer", "timeOption"], (res) => {
+    const time = document.getElementById("time")
+
+    // get no. of minutes & secs
+    const minutes = `${res.timeOption - Math.ceil(res.timer / 60)}`.padStart(2, "0");
+    let seconds = "00";
+    if (res.timer % 60 != 0) {
+      seconds = `${60 - res.timer % 60}`.padStart(2, "0");
+    }
+
+    // show minutes & secs on UI
     time.textContent = `${minutes}:${seconds}`
-    })
-  }
+  })
+}
 
 updateTime()
 setInterval(updateTime, 1000)
 
 // new setting button
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   var button = document.querySelector("#settingsButton");
-  button.addEventListener("click", function() {
+  button.addEventListener("click", function () {
     chrome.runtime.openOptionsPage();
   });
 });
@@ -55,21 +55,24 @@ resetTimerBtn.addEventListener("click", () => {
   })
 })
 
+
+
+
 const addTaskBtn = document.getElementById('add-task-btn')
 addTaskBtn.addEventListener('click', () => addTask())
 
 // set default storage value for the tasks
 chrome.storage.sync.get(['tasks'], (res) => {
-    tasks = res.tasks ? res.tasks : []
-    renderTasks()
+  tasks = res.tasks ? res.tasks : []
+  renderTasks()
+})
+
+// save tasks
+function saveTasks() {
+  chrome.storage.sync.set({
+    tasks: tasks,
   })
-  
-  // save tasks
-  function saveTasks() {
-    chrome.storage.sync.set({
-      tasks: tasks,
-    })
-  }
+}
 
 function renderTask(taskNum) {
   const taskRow = document.createElement('div')
@@ -78,6 +81,7 @@ function renderTask(taskNum) {
   const text = document.createElement('input')
   text.type = 'text'
   text.placeholder = 'Enter a task..'
+  text.className = 'task-input'
 
   //Set and track input values of tasks in the array
   text.value = tasks[taskNum]
@@ -85,27 +89,28 @@ function renderTask(taskNum) {
     tasks[taskNum] = text.value
 
     // call saveTask whenever a value changes
-   saveTasks()
+    saveTasks()
   })
-        
-    // Create delete button
-    const deleteBtn = document.createElement('input')
-    deleteBtn.type = 'button'
-    deleteBtn.value = 'X'
 
-    // delete task
-    deleteBtn.addEventListener('click', () => {
+  // Create delete button
+  const deleteBtn = document.createElement('input')
+  deleteBtn.type = 'button'
+  deleteBtn.value = 'X'
+  deleteBtn.className = 'task-delete'
+
+  // delete task
+  deleteBtn.addEventListener('click', () => {
     deleteTask(taskNum)
-    })
+  })
 
-    // append input elements to taskRow
-    taskRow.appendChild(text)
-    taskRow.appendChild(deleteBtn)
+  // append input elements to taskRow
+  taskRow.appendChild(text)
+  taskRow.appendChild(deleteBtn)
 
-    // append taskRow to taskContainer
-    const taskContainer = document.getElementById('task-container')
-    taskContainer.appendChild(taskRow)
-    }
+  // append taskRow to taskContainer
+  const taskContainer = document.getElementById('task-container')
+  taskContainer.appendChild(taskRow)
+}
 
 
 function addTask() {
@@ -124,10 +129,9 @@ function deleteTask(tasksNum) {
 }
 
 function renderTasks() {
-    const taskContainer = document.getElementById('task-container')
-    taskContainer.textContent = ''
-    tasks.forEach((taskText, tasksNum) => {
-      renderTask(tasksNum)
-    })
-  }
-  
+  const taskContainer = document.getElementById('task-container')
+  taskContainer.textContent = ''
+  tasks.forEach((taskText, tasksNum) => {
+    renderTask(tasksNum)
+  })
+}
